@@ -19,7 +19,7 @@ if [ $# -lt 4 ] || [ $# -gt 8 ]; then
 fi
 
 # set defaults
-BASHGPT_MODEL=${5:-text-davinci-003}
+BASHGPT_MODEL=${5:-gpt-3.5-turbo}
 BASHGPT_TEMPERATURE=${6:-0}
 BASHGPT_MAX_TOKENS=${7:-100}
 BASHGPT_TEMPLATE='here is the bash command in a code block: {{TEXT}}'
