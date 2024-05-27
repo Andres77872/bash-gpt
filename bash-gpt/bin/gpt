@@ -34,7 +34,7 @@ parse_code() {
 
     # Extract command between triple backticks
     if [[ $OUTPUT == *"\`\`\`"* ]]; then
-        COMMAND=$(echo "$OUTPUT" | awk '/^```bash$/,/^```$/ { if (!/```/) print }')
+        COMMAND=$(echo "$OUTPUT" | sed -n '/^```[a-zA-Z]*$/,/^```$/p' | sed '/^```/d')
     fi
 }
 
