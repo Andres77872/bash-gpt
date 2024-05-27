@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# check if template exists
+# Check if template exists
 if [[ ! -f $BASHGPT_PREFIX/bash-gpt/templates/$BASHGPT_MODEL ]]
 then
     echo "ERROR: template $BASHGPT_MODEL not found in $BASHGPT_PREFIX/bash-gpt/templates"
@@ -10,13 +10,13 @@ fi
 OUTPUT=""
 COMMAND=""
 
-# escape quotes
+# Escape quotes
 READLINE_LINE=$(echo $READLINE_LINE | sed -E 's/"/\\"/g')
 
-# perform prompt substitution
+# Perform prompt substitution
 BASHGPT_PROMPT="${BASHGPT_TEMPLATE//\{\{TEXT\}\}/$READLINE_LINE}"
 
-# load template
+# Load template
 . $BASHGPT_PREFIX/bash-gpt/templates/$BASHGPT_MODEL
 
 redraw_current_line() {
@@ -28,19 +28,13 @@ redraw_current_line() {
 }
 
 parse_code() {
-    # check if json contains text or content property
-    if [[ $JSON == *"\"text\": \""*"\""* ]] || [[ $JSON == *"\"content\": \""*"\""* ]]
-    then
-        # parse out text or content property
-        OUTPUT=$(echo $JSON | awk -F'"(content|text)": "(\\\\n)*' '{print $2}' | grep -Po '^(.+?)(?<!\\)"' | sed -E 's/"$//' | sed -E 's/\\"/"/g')
+    # Extract JSON content, assuming 'content' is directly under a 'message' object
+    OUTPUT=$(echo $JSON | grep -Po '"content":\s*"\K[^"]*(?=")')
+    OUTPUT=$(echo $OUTPUT | sed -e 's/\\n/\n/g' -e 's/\\"/"/g')
 
-        # check if output contains code block
-        if [[ $OUTPUT == *"\`\`\`"* ]]
-        then
-            # parse out generated command
-            COMMAND=$(echo $OUTPUT | awk -F'```' ' {print $2}')
-            COMMAND=$(echo -e $COMMAND | sed -E 's/^(bash$|#.*$)//g' | awk '/./,EOF{print}')
-        fi
+    # Extract command between triple backticks
+    if [[ $OUTPUT == *"\`\`\`"* ]]; then
+        COMMAND=$(echo "$OUTPUT" | awk '/^```bash$/,/^```$/ { if (!/```/) print }')
     fi
 }
 
