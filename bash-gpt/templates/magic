@@ -1,0 +1,6 @@
+BASHGPT_ENDPOINT="https://llm.arz.ai/chat/completions"
+# for llm magic router support https://llm.arz.ai/models
+BASHGPT_DATA="{ \"model\": \"@01/gpt-4o\",
+	\"messages\": [{\"role\": \"user\", \"content\": \"$BASHGPT_PROMPT\"}],
+	\"temperature\": $BASHGPT_TEMPERATURE,
+  \"max_tokens\": $BASHGPT_MAX_TOKENS }"
